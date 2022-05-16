@@ -1,0 +1,7 @@
+name: keqv
+description: Convert the simplest file data format key=value between string and map.
+version: 1.0.0
+environment: 
+  sdk: ">=2.12.0 <3.0.0"
+dev_dependencies:
+  test: ^1.21.1
