@@ -72,7 +72,7 @@ class KEqVDecoder extends Converter<String, Map<String, String?>> {
             "Key can not be empty or whitespace only string", kv[0]);
       }
 
-      return <String>[kv[0], kv.skip(0).join("=")];
+      return <String>[kv[0], kv.skip(1).join("=")];
     }).toList();
 
     Iterable<String> k = row.map((e) => e.first);
