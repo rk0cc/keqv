@@ -1,8 +1,12 @@
 name: keqv
 description: Convert the simplest file data format key=value between string and map.
-version: 1.0.0
+version: 2.0.0-beta.1
 repository: https://github.com/rk0cc/keqv
 environment: 
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
+dependencies:
+  meta: ^1.10.0
 dev_dependencies:
-  test: ^1.17.12
+  lints: ^3.0.0
+  test: ^1.25.2
+
