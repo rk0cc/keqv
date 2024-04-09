@@ -22,7 +22,7 @@ jobs:
           - stable
           - beta
           - dev
-          - 2.12.4
+          - 3.0.0
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
