@@ -3,8 +3,14 @@ library keqv;
 
 import 'dart:convert';
 
+import 'src/decode.dart';
+import 'src/encode.dart';
+import 'src/str_escape.dart';
+
+export 'src/str_escape.dart' hide StringNotation;
+
 /// A constant of [KEqVCodec] with default setting.
-const KEqVCodec keqv = KEqVCodec();
+const KEqVCodec keqv = KEqVCodec._(Quoting.doubleQuote, 1, 1);
 
 /// A [Codec] for handling simpliest file data format: `key=value`.
 ///
@@ -21,100 +27,39 @@ const KEqVCodec keqv = KEqVCodec();
 ///
 /// [KEqVCodec] will be recognized the key and value field with trimmed [String]
 /// and [Null] if no value defined for the key.
-class KEqVCodec extends Codec<Map<String, String?>, String> {
-  /// Define how many space charathers between key and the equal symbol.
-  final int encodeLeftSpacing;
+final class KEqVCodec extends Codec<Map<String, Object?>, String> {
+  final Quoting quoting;
+  final int leftSpacing;
+  final int rightSpacing;
 
-  /// Define how many space charathers between value and the equal symbol.
-  final int encodeRightSpacing;
+  const KEqVCodec._(this.quoting, this.leftSpacing, this.rightSpacing);
 
-  /// Construct a [KEqVCodec].
-  ///
-  /// Optionally, specify [encodeLeftSpacing] and [encodeRightSpacing] for apply
-  /// exported layout of [encode].
-  const KEqVCodec({this.encodeLeftSpacing = 1, this.encodeRightSpacing = 1})
-      : assert(encodeLeftSpacing >= 0 && encodeRightSpacing >= 0);
-
-  /// Construct a [KEqVCodec] and apply [encodeSpacing] for each side.
-  const KEqVCodec.encodeSpacingBoth({int encodeSpacing = 1})
-      : assert(encodeSpacing >= 0),
-        this.encodeLeftSpacing = encodeSpacing,
-        this.encodeRightSpacing = encodeSpacing;
-
-  /// Construct a [KEqVCodec] without spacing when [encode].
-  const KEqVCodec.encodeNoSpacing()
-      : this.encodeLeftSpacing = 0,
-        this.encodeRightSpacing = 0;
-
-  @override
-  Converter<Map<String, String?>, String> get encoder =>
-      KEqVEncoder._(encodeLeftSpacing, encodeRightSpacing);
-
-  @override
-  Converter<String, Map<String, String?>> get decoder => const KEqVDecoder._();
-}
-
-/// Handle [KEqVCodec] convert from [String] to corresponded [Map].
-class KEqVDecoder extends Converter<String, Map<String, String?>> {
-  /// Construct a decoder.
-  const KEqVDecoder._();
-
-  @override
-  Map<String, String?> convert(String input) {
-    List<String> kvrow = input.split(RegExp(r"\r?\n"))
-      ..removeWhere((r) => r.isEmpty);
-
-    List<List<String>> row = kvrow.map((e) {
-      List<String> kv = e.split("=");
-
-      if (kv[0].trim().isEmpty) {
-        throw FormatException(
-            "Key can not be empty or whitespace only string", kv[0]);
-      }
-
-      return <String>[kv[0], kv.skip(1).join("=")];
-    }).toList();
-
-    Iterable<String> k = row.map((e) => e.first);
-    Set<String> ks = k.toSet();
-
-    if (k.length != ks.length) {
-      Iterable<String> duplicated =
-          ks.where((dk) => k.where((rk) => rk == dk).length > 1);
-
-      throw FormatException(
-          "Found ${duplicated.length} duplicated key${duplicated.length == 1 ? '' : 's'}.",
-          duplicated);
+  factory KEqVCodec(
+      {Quoting quoting = Quoting.doubleQuote,
+      int leftSpacing = 1,
+      int rightSpacing = 1}) {
+    if (<int>[leftSpacing, rightSpacing].any((element) => element < 0)) {
+      throw ArgumentError.value(
+          (leftSpacing, rightSpacing),
+          "(leftSpacing, rightSpacing)",
+          "Spacing value should not be an negative integer.");
     }
 
-    return <String, String?>{
-      for (List<String> kv in row) kv[0]: kv[1].isEmpty ? null : kv[1]
-    };
+    return KEqVCodec._(quoting, leftSpacing, rightSpacing);
   }
-}
 
-/// Handle [KEqVCodec] to siringify [Map].
-class KEqVEncoder extends Converter<Map<String, String?>, String> {
-  /// Define spacing between key and equal symbol.
-  final int _leftSpacing;
+  factory KEqVCodec.symmetricSpacing(
+          {Quoting quoting = Quoting.doubleQuote, int spacing = 1}) =>
+      KEqVCodec(quoting: quoting, leftSpacing: spacing, rightSpacing: spacing);
 
-  /// Define spacing between value and equal symbol.
-  final int _rightSpacing;
-
-  /// Construct a encoder and specify [leftSpacing] and [rightSpacing].
-  const KEqVEncoder._(this._leftSpacing, this._rightSpacing)
-      : assert(_leftSpacing >= 0 && _rightSpacing >= 0);
+  const KEqVCodec.noSpacing({this.quoting = Quoting.doubleQuote})
+      : leftSpacing = 0,
+        rightSpacing = 0;
 
   @override
-  String convert(Map<String, String?> input) => input.entries
-      .map((e) =>
-          "${e.key}${List.filled(_leftSpacing, ' ').join()}=${List.filled(_rightSpacing, ' ')}${e.value ?? ''}")
-      .join("\n");
-}
+  Converter<String, Map<String, Object?>> get decoder => KEqVDecoder();
 
-/// [Map] extension that convert value as [String].
-extension KEqVMapConverter<T> on Map<String, T> {
-  /// Convert to [Map] for [KEqVCodec].
-  Map<String, String?> toKEqVMap() => Map.fromEntries(this.entries.map(
-      (e) => MapEntry(e.key, e.value == null ? null : e.value.toString())));
+  @override
+  Converter<Map<String, Object?>, String> get encoder =>
+      KEqVEncoder(quoting, leftSpacing, rightSpacing);
 }
