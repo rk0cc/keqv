@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - directory: /
+    package-ecosystem: pub
+    schedule:
+      interval: monthly
+      timezone: Asia/Hong_Kong
+      time: "10:00"
+      day: tuesday
+  - directory: /
+    package-ecosystem: github-actions
+    schedule:
+      interval: monthly
+      timezone: Asia/Hong_Kong
+      time: "10:00"
+      day: tuesday
