@@ -30,16 +30,13 @@ extension StringNotation on String {
     return isArray || isObject;
   }
 
-  bool get useQuote {
+  bool isQuotedWith(Quoting quoting) {
     final (firstChar, lastChar) = wrappedChar;
 
-    final bool isUsingQuote = <String>[
-      firstChar,
-      lastChar
-    ].every((element) => Quoting.values.map((e) => e.quote).contains(element));
-
-    return isUsingQuote && firstChar == lastChar;
+    return firstChar == quoting.quote && lastChar == quoting.quote;
   }
+
+  bool get useQuote => Quoting.values.any(isQuotedWith);
 }
 
 final class EscapedCharCodec extends Codec<String, String> {
