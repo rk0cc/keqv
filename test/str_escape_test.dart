@@ -14,10 +14,10 @@ void main() {
       expect(doubleQuote.decode(r'"true"'), equals("true"));
     });
     test("control character", () {
-      expect(doubleQuote.encode("foo\nbar"), equals(r'"foo\nbar"'));
-      expect(doubleQuote.encode("1\t2\r\n3"), equals(r'"1\t2\r\n3"'));
-      expect(doubleQuote.decode(r'"abc\n\tdef"'), equals("abc\n\tdef"));
-      expect(doubleQuote.decode(r'"4\t\r5"'), equals("4\t\r5"));
+      expect(doubleQuote.encode("foo\nbar"), equals(r'foo\nbar'));
+      expect(doubleQuote.encode("1\t2\r\n3"), equals(r'1\t2\r\n3'));
+      expect(doubleQuote.decode(r'abc\n\tdef'), equals("abc\n\tdef"));
+      expect(doubleQuote.decode(r'4\t\r5'), equals("4\t\r5"));
     });
   });
 }

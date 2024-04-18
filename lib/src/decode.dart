@@ -42,19 +42,20 @@ final class KEqVDecoder extends Converter<String, Map<String, dynamic>> {
       return null;
     }
 
-    if (decValue.useQuote) {
-      return decValue.substring(1, decValue.length - 1);
+    if (value.useQuote) {
+      return decValue;
     }
 
+    // FUCK STATIC ANALYSIS
     try {
       return num.parse(decValue);
-    } on FormatException {}
-
-    try {
-      return bool.parse(decValue);
-    } on FormatException {}
-
-    return decValue;
+    } on FormatException {
+      try {
+        return bool.parse(decValue);
+      } on FormatException {
+        return decValue;
+      }
+    }
   }
 
   @override

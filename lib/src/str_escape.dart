@@ -2,19 +2,30 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
+/// Determine quoting symbol when the [String] can be used for
+/// [num.parse], [bool.parse] and containers symbols for JSON
+/// (e.g. `[]` and `{}`).
 enum Quoting {
+  /// Apply signle quote (`'`) symbol.
   singleQuote(r"'"),
+
+  /// Apply double quote (`"`) symbol.
   doubleQuote(r'"');
 
-  final String quote;
+  final String _quote;
 
-  const Quoting(this.quote);
+  const Quoting(this._quote);
 }
 
+/// [String] extension for detecting pattern.
 @internal
 extension StringNotation on String {
+  /// Extract the first and last [String]'s character.
   (String, String) get wrappedChar => (this[0], this[length - 1]);
 
+  /// Determine this [String] can be parsed by using [num.parse]
+  /// and [bool.parse]. Or the applied [wrappedChar] cause
+  /// [json] assumes as either object or array.
   bool get canBeParsed {
     if ([num.tryParse(this), bool.tryParse(this)]
         .any((element) => element != null)) {
@@ -28,18 +39,26 @@ extension StringNotation on String {
     return isArray || isObject;
   }
 
+  /// Check this [String] is quoted with [quoting] symbol.
   bool isQuotedWith(Quoting quoting) {
     final (firstChar, lastChar) = wrappedChar;
 
-    return firstChar == quoting.quote && lastChar == quoting.quote;
+    return firstChar == quoting._quote && lastChar == quoting._quote;
   }
 
+  /// Check this [String] is quoted.
   bool get useQuote => Quoting.values.any(isQuotedWith);
+
+  String unquote() => useQuote ? substring(1, length - 1) : this;
 }
 
+/// Escape all control characters to human readable [String] based
+/// on [JsonCodec] as well as denote [String] type when parsable.
 final class EscapedCharCodec extends Codec<String, String> {
+  /// Define quoting symbol when [encode] with parsable [String].
   final Quoting? quoting;
 
+  /// Create instance of escaping character codec.
   const EscapedCharCodec({this.quoting});
 
   @override
@@ -62,13 +81,7 @@ final class _EscapedCharDecoder extends Converter<String, String> {
       decCtx = decCtx.substring(1, decCtx.length - 1);
     }
 
-    decCtx = jsonDecode('"$decCtx"');
-
-    if (input.useQuote) {
-      decCtx = '"$decCtx"';
-    }
-
-    return decCtx;
+    return jsonDecode('"$decCtx"');
   }
 }
 
@@ -83,7 +96,7 @@ final class _EscapedCharEncoder extends Converter<String, String> {
     encoded = encoded.substring(1, encoded.length - 1);
 
     if (encoded.canBeParsed) {
-      encoded = quoting.quote + encoded + quoting.quote;
+      encoded = quoting._quote + encoded + quoting._quote;
     }
 
     return encoded;

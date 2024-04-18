@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 
 import 'str_escape.dart';
 
+/// 
 final class InvalidValueTypeError extends TypeError {
   final Iterable<String> keys;
   final String message;
@@ -37,7 +38,6 @@ final class InvalidValueTypeError extends TypeError {
   }
 }
 
-/// Handle [KEqVCodec] to siringify [Map].
 @internal
 final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
   final EscapedCharCodec _escChar;
@@ -52,7 +52,7 @@ final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
 
   void _assembleEntry(StringBuffer buf, MapEntry<String, Object?> entry) {
     if (entry.key
-        .contains(RegExp(r'[\^*.\[\]{}()?\-"!@#%&/\,><:;~`+=' + "'" + ']'))) {
+        .contains(RegExp(r'[\^*.\[\]{}()?\-"!@#%&/\,><:;~`+=' "'" ']'))) {
       throw ArgumentError.value(entry.key, "entry.key",
           "One of the keys contains invalid characters");
     }

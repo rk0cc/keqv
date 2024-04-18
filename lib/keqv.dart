@@ -18,10 +18,9 @@ export 'src/str_escape.dart' hide StringNotation;
 /// baz=
 /// bob = male
 /// alice= female
+/// number =  3
+/// is_dart    =true
 /// ```
-///
-/// The first `=` symbol will be uses to define key and value, any `=` applied
-/// after the first symbol will be recognized as [String] value.
 ///
 /// [KEqVCodec] will be recognized the key and value field with trimmed [String]
 /// and [Null] if no value defined for the key.
