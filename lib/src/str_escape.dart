@@ -16,10 +16,8 @@ extension StringNotation on String {
   (String, String) get wrappedChar => (this[0], this[length - 1]);
 
   bool get canBeParsed {
-    try {
-      num.parse(this);
-      bool.parse(this);
-    } on FormatException {
+    if ([num.tryParse(this), bool.tryParse(this)]
+        .any((element) => element != null)) {
       return true;
     }
 
@@ -64,7 +62,13 @@ final class _EscapedCharDecoder extends Converter<String, String> {
       decCtx = decCtx.substring(1, decCtx.length - 1);
     }
 
-    return jsonDecode('"$decCtx"');
+    decCtx = jsonDecode('"$decCtx"');
+
+    if (input.useQuote) {
+      decCtx = '"$decCtx"';
+    }
+
+    return decCtx;
   }
 }
 

@@ -8,7 +8,7 @@ typedef _PairRow = ({String key, String value});
 
 /// Handle [KEqVCodec] convert from [String] to corresponded [Map].
 @internal
-final class KEqVDecoder extends Converter<String, Map<String, Object?>> {
+final class KEqVDecoder extends Converter<String, Map<String, dynamic>> {
   final EscapedCharCodec _escChar = const EscapedCharCodec();
 
   /// Construct a decoder.
@@ -58,10 +58,10 @@ final class KEqVDecoder extends Converter<String, Map<String, Object?>> {
   }
 
   @override
-  Map<String, Object?> convert(String input) {
+  Map<String, dynamic> convert(String input) {
     final Iterable<_PairRow> pairRow = LineSplitter.split(input).map(_readLine);
 
-    return <String, Object?>{
+    return <String, dynamic>{
       for (var (key: k, value: v) in pairRow) k: _parseValue(v)
     };
   }

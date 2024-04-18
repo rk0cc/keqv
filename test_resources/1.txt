@@ -1,4 +1,0 @@
-foo = bar
-val = 1.44
-snum = "3.14"
-yn = true

@@ -39,7 +39,7 @@ final class InvalidValueTypeError extends TypeError {
 
 /// Handle [KEqVCodec] to siringify [Map].
 @internal
-final class KEqVEncoder extends Converter<Map<String, Object?>, String> {
+final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
   final EscapedCharCodec _escChar;
   final int leftSpacing;
   final int rightSpacing;
@@ -70,7 +70,7 @@ final class KEqVEncoder extends Converter<Map<String, Object?>, String> {
   }
 
   @override
-  String convert(Map<String, Object?> input) {
+  String convert(Map<String, dynamic> input) {
     if (!input.values.every(_isValidValueType)) {
       final Iterable<String> invalidKeys = input.entries
           .where((element) => _isValidValueType(element.value))
@@ -80,7 +80,7 @@ final class KEqVEncoder extends Converter<Map<String, Object?>, String> {
 
     final StringBuffer buf = StringBuffer();
 
-    for (MapEntry<String, Object?> entry in input.entries) {
+    for (MapEntry<String, dynamic> entry in input.entries) {
       _assembleEntry(buf, entry);
       buf.writeln();
     }

@@ -7,10 +7,8 @@ import 'src/decode.dart';
 import 'src/encode.dart';
 import 'src/str_escape.dart';
 
+export 'src/encode.dart' show InvalidValueTypeError;
 export 'src/str_escape.dart' hide StringNotation;
-
-/// A constant of [KEqVCodec] with default setting.
-const KEqVCodec keqv = KEqVCodec._(Quoting.doubleQuote, 1, 1);
 
 /// A [Codec] for handling simpliest file data format: `key=value`.
 ///
@@ -27,7 +25,10 @@ const KEqVCodec keqv = KEqVCodec._(Quoting.doubleQuote, 1, 1);
 ///
 /// [KEqVCodec] will be recognized the key and value field with trimmed [String]
 /// and [Null] if no value defined for the key.
-final class KEqVCodec extends Codec<Map<String, Object?>, String> {
+const KEqVCodec keqv = KEqVCodec._(Quoting.doubleQuote, 1, 1);
+
+/// Class definition of [keqv].
+final class KEqVCodec extends Codec<Map<String, dynamic>, String> {
   final Quoting quoting;
   final int leftSpacing;
   final int rightSpacing;
@@ -57,9 +58,9 @@ final class KEqVCodec extends Codec<Map<String, Object?>, String> {
         rightSpacing = 0;
 
   @override
-  Converter<String, Map<String, Object?>> get decoder => KEqVDecoder();
+  Converter<String, Map<String, dynamic>> get decoder => KEqVDecoder();
 
   @override
-  Converter<Map<String, Object?>, String> get encoder =>
+  Converter<Map<String, dynamic>, String> get encoder =>
       KEqVEncoder(quoting, leftSpacing, rightSpacing);
 }
