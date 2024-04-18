@@ -7,10 +7,7 @@ number = 3
 
   print(keqv.decode(mock));
 
-  const Map<String, dynamic> dummy = {
-    "baz": "alice",
-    "none": null
-  };
+  const Map<String, dynamic> dummy = {"baz": "alice", "none": null};
 
   print(keqv.encode(dummy));
 }

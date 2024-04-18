@@ -45,7 +45,7 @@ empty =
         {"baz=": "foul"},
         {"baz_!!": null}
       ];
-      
+
       for (Map<String, dynamic> m in invalidKeyMaps) {
         expect(() => keqv.encode(m), throwsArgumentError);
       }
@@ -53,11 +53,15 @@ empty =
 
     test("non-primitive types", () {
       final List<Map<String, dynamic>> invalidValueType = [
-        {"list": [1,2,3]},
-        {"set": {"d", "e", "f"}},
+        {
+          "list": [1, 2, 3]
+        },
+        {
+          "set": {"d", "e", "f"}
+        },
         {"datetime": DateTime(2024)}
       ];
-      
+
       for (Map<String, dynamic> m in invalidValueType) {
         expect(() => keqv.encode(m), throwsA(isA<InvalidValueTypeError>()));
       }
