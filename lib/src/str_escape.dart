@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 
 /// Determine quoting symbol when the [String] can be used for
-/// [num.parse], [bool.parse] and containers symbols for JSON
-/// (e.g. `[]` and `{}`).
+/// [num.parse] and [bool.parse].
 enum Quoting {
   /// Apply signle quote (`'`) symbol.
   singleQuote(r"'"),
