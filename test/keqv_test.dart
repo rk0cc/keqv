@@ -2,24 +2,32 @@ import 'package:keqv/keqv.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test("Parsing", () {
-    const String validFormat = '''foo = bar
+  group("Parsing", () {
+    test("when valid", () {
+      const String validFormat = '''foo = bar
 val = 1.44
 snum = "3.14"
 yn = true
 ''';
 
-    const String invalidFormat = '''invalid
-valid = true
-''';
+      final parsedKeqV = keqv.decode(validFormat);
+      expect(parsedKeqV["foo"], allOf(<Matcher>[isA<String>(), equals("bar")]));
+      expect(parsedKeqV["val"], allOf(<Matcher>[isA<num>(), equals(1.44)]));
+      expect(
+          parsedKeqV["snum"], allOf(<Matcher>[isA<String>(), equals("3.14")]));
+      expect(parsedKeqV["yn"], isTrue);
+    });
 
-    expect(() => keqv.decode(invalidFormat), throwsFormatException);
+    test("when invalid", () {
+      const List<String> invalidFormats = [
+        'invalid\nvalid = true',
+        '=invalid\nvalid = 2'
+      ];
 
-    final parsedKeqV = keqv.decode(validFormat);
-    expect(parsedKeqV["foo"], isA<String>());
-    expect(parsedKeqV["val"], isA<num>());
-    expect(parsedKeqV["snum"], isA<String>());
-    expect(parsedKeqV["yn"], isTrue);
+      for (String invalidFormat in invalidFormats) {
+        expect(() => keqv.decode(invalidFormat), throwsFormatException);
+      }
+    });
   });
 
   group("Stringify", () {
