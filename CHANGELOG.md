@@ -2,6 +2,9 @@
 
 * Score highest static analysis
 * Proper documenatation
+* Simply parsable string condition
+* New throwable: `InvalidValueTypeError`
+* Diallow parsing statement with empty key name
 
 ## 2.0.0-pre.1
 
