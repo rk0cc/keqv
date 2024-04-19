@@ -11,6 +11,13 @@ import 'src/str_escape.dart';
 export 'src/exception.dart' show InvalidValueTypeError;
 export 'src/str_escape.dart' hide StringNotation;
 
+/// Convert [KEqVCodec] encoded content from [String] to bytes using
+/// [Encoding] and vice versa.
+typedef KEqVBinarizer = Codec<Map<String, dynamic>, List<int>>;
+
+/// A [Codec] responsable for compressing byte data.
+typedef Compressor = Codec<List<int>, List<int>>;
+
 /// A constant [KEqVCodec] with equivalent default preference from
 /// [KEqVCodec.new].
 const KEqVCodec keqv = KEqVCodec._(Quoting.doubleQuote, 1, 1);
@@ -44,6 +51,9 @@ const KEqVCodec keqv = KEqVCodec._(Quoting.doubleQuote, 1, 1);
 /// value (optional) in a sequence. If incompleted statements existed,
 /// it throws [FormatException].
 final class KEqVCodec extends Codec<Map<String, dynamic>, String> {
+  /// Forbidden [Encoding.name] uses for [binarizer].
+  static const Set<String> _encodingBlacklist = {"system"};
+
   /// Apply quoting symbol to prevent [String] value parsed to
   /// another type.
   final Quoting quoting;
@@ -91,6 +101,30 @@ final class KEqVCodec extends Codec<Map<String, dynamic>, String> {
   const KEqVCodec.noSpacing({this.quoting = Quoting.doubleQuote})
       : keySpacing = 0,
         valueSpacing = 0;
+
+  /// [fuse] from [String] to byte with provided [Encoding].
+  ///
+  /// The [encoding] should only handle one [Encoding] method without
+  /// any conditions applied. Otherwise, it throws [UnsupportedError].
+  /// 
+  /// Optinally, it can specify [compressor] if necessary.
+  static KEqVBinarizer binarizer(Encoding encoding,
+      {Compressor? compressor,
+      Quoting quoting = Quoting.doubleQuote,
+      int keySpacing = 1,
+      int valueSpacing = 1}) {
+    if (_encodingBlacklist.contains(encoding.name)) {
+      throw UnsupportedError("This encoding method has been blacklisted.");
+    }
+
+    KEqVBinarizer binarizer = KEqVCodec._(quoting, keySpacing, valueSpacing).fuse(encoding);
+
+    if (compressor != null) {
+      binarizer = binarizer.fuse(compressor);
+    }
+
+    return binarizer;
+  }
 
   @override
   Converter<String, Map<String, dynamic>> get decoder => KEqVDecoder();

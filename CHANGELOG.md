@@ -1,3 +1,7 @@
+## 2.0.0
+
+* Add binarizer supported for converting between `Map` and bytes.
+
 ## 2.0.0-pre.2
 
 * Score highest static analysis
