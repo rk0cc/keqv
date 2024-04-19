@@ -24,20 +24,9 @@ extension StringNotation on String {
   (String, String) get wrappedChar => (this[0], this[length - 1]);
 
   /// Determine this [String] can be parsed by using [num.parse]
-  /// and [bool.parse]. Or the applied [wrappedChar] cause
-  /// [json] assumes as either object or array.
-  bool get canBeParsed {
-    if ([num.tryParse(this), bool.tryParse(this)]
-        .any((element) => element != null)) {
-      return true;
-    }
-
-    final (firstChar, lastChar) = wrappedChar;
-    final bool isArray = firstChar == r"[" && lastChar == r"]";
-    final bool isObject = firstChar == r"{" && lastChar == r"}";
-
-    return isArray || isObject;
-  }
+  /// and [bool.parse].
+  bool get canBeParsed => [num.tryParse(this), bool.tryParse(this)]
+      .any((element) => element != null);
 
   /// Check this [String] is quoted with [quoting] symbol.
   bool isQuotedWith(Quoting quoting) {
