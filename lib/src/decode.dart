@@ -7,10 +7,12 @@ import 'str_escape.dart';
 
 typedef _PairRow = ({String key, String value});
 
+/// Decode [String] to [Map] object.
 @internal
 final class KEqVDecoder extends Converter<String, Map<String, dynamic>> {
   final EscapedCharCodec _escChar = const EscapedCharCodec();
 
+  /// Create [KEqVDecoder].
   KEqVDecoder();
 
   _PairRow _readLine(String line) {

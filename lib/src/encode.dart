@@ -5,13 +5,19 @@ import 'package:meta/meta.dart';
 import 'exception.dart';
 import 'str_escape.dart';
 
+/// Encoder section for converting [Map] to [String] notation.
 @internal
 final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
   final EscapedCharCodec _escChar;
-  final int leftSpacing;
-  final int rightSpacing;
 
-  KEqVEncoder(Quoting quoting, this.leftSpacing, this.rightSpacing)
+  /// Spacing between key and equal sign.
+  final int keySpacing;
+
+  /// Spacing between equal sign and value.
+  final int valueSpacing;
+
+  /// Create [KEqVEncoder].
+  KEqVEncoder(Quoting quoting, this.keySpacing, this.valueSpacing)
       : _escChar = EscapedCharCodec(quoting: quoting);
 
   static bool _isValidValueType(Object? value) =>
@@ -22,9 +28,9 @@ final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
 
     buf
       ..write(entry.key)
-      ..write(r" " * leftSpacing)
+      ..write(r" " * keySpacing)
       ..write("=")
-      ..write(r" " * rightSpacing);
+      ..write(r" " * valueSpacing);
 
     if (entry.value != null) {
       buf.write(entry.value is String

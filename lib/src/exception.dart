@@ -36,16 +36,19 @@ final class InvalidValueTypeError extends TypeError {
   }
 }
 
+/// Perform throwing [Error] and [Exception] functions calling.
 @internal
 final class KEqVThrowable {
   const KEqVThrowable._();
 
+  /// Proxy caller for throwing [InvalidValueTypeError].
   static Never throwInvalidValueTypeError(Iterable<String> keys,
       [String message =
           "All values should use primitive data type, but non-primitive type found in the map."]) {
     throw InvalidValueTypeError._(keys, message);
   }
 
+  /// Verify [key] naming pattern. If it is invalid, throws [ArgumentError].
   static void verifyKeyPattern(String key) {
     if (key.contains(RegExp(r'[\^*.\[\]{}()?\-"!@#%&/\,><:;~`+=' "'" ']'))) {
       throw ArgumentError.value(

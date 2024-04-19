@@ -1,4 +1,4 @@
-/// A pure Dart library for reading simpliest file data format.
+/// Simplest key-value pair [Codec] for converting between [Map] and [String].
 library keqv;
 
 import 'dart:convert';
