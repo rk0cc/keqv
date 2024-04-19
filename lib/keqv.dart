@@ -66,7 +66,7 @@ final class KEqVCodec extends Codec<Map<String, dynamic>, String> {
   /// equal symbol. It should be non-negative [int] with default value as `1`.
   /// [ArgumentError] will be thrown if attempted to assign negative [int].
   ///
-  /// It is enguoraged to uses [keqv] constant if no preferences need to be
+  /// It is encouraged to uses [keqv] constant if no preferences need to be
   /// changed.
   factory KEqVCodec(
       {Quoting quoting = Quoting.doubleQuote,
