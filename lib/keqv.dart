@@ -107,7 +107,7 @@ final class KEqVCodec extends Codec<Map<String, dynamic>, String> {
   /// The [encoding] should only handle one [Encoding] method without
   /// any conditions applied. Otherwise, it throws [UnsupportedError].
   /// 
-  /// Optinally, it can specify [compressor] if necessary.
+  /// Optinally, it can specify [compressor] if data compression is required.
   static KEqVBinarizer binarizer(Encoding encoding,
       {Compressor? compressor,
       Quoting quoting = Quoting.doubleQuote,
