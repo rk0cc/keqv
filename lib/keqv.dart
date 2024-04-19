@@ -85,7 +85,7 @@ final class KEqVCodec extends Codec<Map<String, dynamic>, String> {
     if (<int>[keySpacing, valueSpacing].any((element) => element < 0)) {
       throw ArgumentError.value(
           (keySpacing, valueSpacing),
-          "(leftSpacing, rightSpacing)",
+          "(keySpacing, valueSpacing)",
           "Spacing value should not be an negative integer.");
     }
 
