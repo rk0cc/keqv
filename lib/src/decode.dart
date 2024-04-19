@@ -2,16 +2,15 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
+import 'exception.dart';
 import 'str_escape.dart';
 
 typedef _PairRow = ({String key, String value});
 
-/// Handle [KEqVCodec] convert from [String] to corresponded [Map].
 @internal
 final class KEqVDecoder extends Converter<String, Map<String, dynamic>> {
   final EscapedCharCodec _escChar = const EscapedCharCodec();
 
-  /// Construct a decoder.
   KEqVDecoder();
 
   _PairRow _readLine(String line) {
@@ -23,12 +22,16 @@ final class KEqVDecoder extends Converter<String, Map<String, dynamic>> {
       }
     }
 
-    if (equalPos >= line.length) {
+    if (equalPos >= line.length || equalPos == 0) {
       throw FormatException("Incompleted statement content found", line);
     }
 
+    final String k = line.substring(0, equalPos).trim();
+
+    KEqVThrowable.verifyKeyPattern(k);
+
     return (
-      key: line.substring(0, equalPos).trim(),
+      key: k,
       value: line.length == equalPos + 1
           ? ""
           : line.substring(equalPos + 1, line.length).trim()
@@ -46,7 +49,6 @@ final class KEqVDecoder extends Converter<String, Map<String, dynamic>> {
       return decValue;
     }
 
-    // FUCK STATIC ANALYSIS
     try {
       return num.parse(decValue);
     } on FormatException {
@@ -60,7 +62,9 @@ final class KEqVDecoder extends Converter<String, Map<String, dynamic>> {
 
   @override
   Map<String, dynamic> convert(String input) {
-    final Iterable<_PairRow> pairRow = LineSplitter.split(input).map(_readLine);
+    final Iterable<_PairRow> pairRow = LineSplitter.split(input)
+        .where((element) => element.isNotEmpty)
+        .map(_readLine);
 
     return <String, dynamic>{
       for (var (key: k, value: v) in pairRow) k: _parseValue(v)

@@ -2,41 +2,8 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
+import 'exception.dart';
 import 'str_escape.dart';
-
-/// 
-final class InvalidValueTypeError extends TypeError {
-  final Iterable<String> keys;
-  final String message;
-
-  InvalidValueTypeError._(this.keys,
-      // ignore: unused_element
-      [this.message =
-          "All values should use primitive data type, but non-primitive type found in the map."]);
-
-  @override
-  String toString() {
-    final StringBuffer buf = StringBuffer();
-
-    buf
-      ..write("InvalidValueTypeError: ")
-      ..writeln(message)
-      ..writeln()
-      ..write("\tAssociated keys: [");
-
-    if (keys.length <= 3) {
-      buf.write(keys.join(", "));
-    } else {
-      buf
-        ..write(keys.take(3).join(", "))
-        ..write(", ...(with ${keys.length - 3} more)");
-    }
-
-    buf.writeln("]");
-
-    return buf.toString();
-  }
-}
 
 @internal
 final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
@@ -51,11 +18,8 @@ final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
       value == null || value is num || value is bool || value is String;
 
   void _assembleEntry(StringBuffer buf, MapEntry<String, Object?> entry) {
-    if (entry.key
-        .contains(RegExp(r'[\^*.\[\]{}()?\-"!@#%&/\,><:;~`+=' "'" ']'))) {
-      throw ArgumentError.value(entry.key, "entry.key",
-          "One of the keys contains invalid characters");
-    }
+    KEqVThrowable.verifyKeyPattern(entry.key);
+
     buf
       ..write(entry.key)
       ..write(r" " * leftSpacing)
@@ -73,9 +37,10 @@ final class KEqVEncoder extends Converter<Map<String, dynamic>, String> {
   String convert(Map<String, dynamic> input) {
     if (!input.values.every(_isValidValueType)) {
       final Iterable<String> invalidKeys = input.entries
-          .where((element) => _isValidValueType(element.value))
+          .where((element) => !_isValidValueType(element.value))
           .map((e) => e.key);
-      throw InvalidValueTypeError._(invalidKeys);
+
+      KEqVThrowable.throwInvalidValueTypeError(invalidKeys);
     }
 
     final StringBuffer buf = StringBuffer();
